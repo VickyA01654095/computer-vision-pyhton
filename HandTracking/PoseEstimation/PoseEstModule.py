@@ -16,13 +16,13 @@ class poseDetector():
         self.mpPose = mp.solutions.pose
         self.pose = self.mpPose.Pose(self.mode,1, self.smooth, self.enable_segmentation,self.smooth_segmentation, self.detectionCon, self.trackCon)
 
-    def findPose(self, img, draw= True):
+    def findPose(self, img, draw=True):
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        results = self.pose.process(imgRGB)
+        self.results = self.pose.process(imgRGB)
 
         if draw:
-            if results.pose_landmarks:
-                self.mpDraw.draw_landmarks(img, results.pose_landmarks, self.mpPose.POSE_CONNECTIONS)
+            if self.results.pose_landmarks:
+                self.mpDraw.draw_landmarks(img, self.results.pose_landmarks, self.mpPose.POSE_CONNECTIONS)
 
         return img
 
@@ -39,7 +39,7 @@ class poseDetector():
                     cv2.circle(img, (cx,cy), 10, (255, 0, 0), cv2.FILLED)
 
         return lmList
-    
+
 
 def main():
     cap = cv2.VideoCapture(0)
@@ -49,8 +49,8 @@ def main():
     while True:
         success, img = cap.read()
 
-        lmList = detector.getPosition(img)
         img = detector.findPose(img)
+        lmList = detector.getPosition(img)
 
         cTime = time.time()
         fps = 1 / (cTime - pTime)
